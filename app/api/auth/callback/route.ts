@@ -30,15 +30,19 @@ export async function GET(req: NextRequest) {
     return NextResponse.json(tokenData, { status: 400 });
   }
 
-  const response = NextResponse.redirect("http://127.0.0.1:3000");
+  const baseUrl =
+    process.env.NEXT_PUBLIC_BASE_URL ||
+    "http://127.0.0.1:3000";
+
+  const response = NextResponse.redirect(baseUrl);
   response.cookies.set("spotify_access_token", tokenData.access_token, {
     httpOnly: true,
-    secure: false,
+    secure: process.env.NODE_ENV === "production",
     path: "/",
   });
   response.cookies.set("spotify_refresh_token", tokenData.refresh_token, {
     httpOnly: true,
-    secure: false,
+    secure: process.env.NODE_ENV === "production",
     path: "/",
   });
 
