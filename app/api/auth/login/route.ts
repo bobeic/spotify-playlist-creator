@@ -8,8 +8,6 @@ const SCOPES = [
 ].join(" ");
 
 export async function GET() {
-  console.log("NODE_ENV:", process.env.NODE_ENV);
-  console.log("SPOTIFY_REDIRECT_URI:", process.env.SPOTIFY_REDIRECT_URI);
 
   const params = new URLSearchParams({
     response_type: "code",
