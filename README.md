@@ -1,3 +1,8 @@
+# Future Updates
+1. Rename Web Page from Create Next App.
+2. Update Login logic. Show only login button if user is not logged in and automatically grab new tokens if they have logged in before.
+
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
