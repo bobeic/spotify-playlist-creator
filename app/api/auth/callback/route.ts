@@ -1,6 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
+  console.log("Callback hit");
+  console.log("NODE_ENV:", process.env.NODE_ENV);
+  console.log("SPOTIFY_REDIRECT_URI:", process.env.SPOTIFY_REDIRECT_URI);
+  console.log("Request URL:", req.nextUrl.toString());
+
   const code = req.nextUrl.searchParams.get("code");
 
   if (!code) {
@@ -33,6 +38,8 @@ export async function GET(req: NextRequest) {
   const baseUrl =
     process.env.NEXT_PUBLIC_BASE_URL ||
     "http://127.0.0.1:3000";
+
+  console.log("Redirecting to:", baseUrl);
 
   const response = NextResponse.redirect(baseUrl);
   response.cookies.set("spotify_access_token", tokenData.access_token, {

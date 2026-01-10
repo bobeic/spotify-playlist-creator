@@ -8,6 +8,9 @@ const SCOPES = [
 ].join(" ");
 
 export async function GET() {
+  console.log("NODE_ENV:", process.env.NODE_ENV);
+  console.log("SPOTIFY_REDIRECT_URI:", process.env.SPOTIFY_REDIRECT_URI);
+
   const params = new URLSearchParams({
     response_type: "code",
     client_id: process.env.SPOTIFY_CLIENT_ID!,
@@ -15,7 +18,9 @@ export async function GET() {
     redirect_uri: process.env.SPOTIFY_REDIRECT_URI!,
   });
 
-  return NextResponse.redirect(
-    `https://accounts.spotify.com/authorize?${params.toString()}`
-  );
+  const authUrl = `https://accounts.spotify.com/authorize?${params.toString()}`;
+
+  console.log("Spotify auth URL:", authUrl);
+
+  return NextResponse.redirect(authUrl);
 }
