@@ -4,7 +4,8 @@ const SCOPES = [
   "playlist-modify-public",
   "playlist-modify-private",
   "user-read-private",
-  "playlist-read-private"
+  "playlist-read-private",
+  "user-read-recently-played"
 ].join(" ");
 
 export async function GET() {

@@ -1,20 +1,18 @@
-import { cookies } from "next/headers";
-import { NextResponse } from "next/server";
+import { NextResponse } from "next/server"
+import { getCurrentUser } from "@/lib/auth/getCurrentUser"
 
 export async function GET() {
-  const cookieStore = await cookies();
-  const accessToken = cookieStore.get("spotify_access_token")?.value;
-
-  if (!accessToken) {
-    return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
+  // ✅ Get the currently logged-in user
+  const user = await getCurrentUser()
+  if (!user || !user.spotifyAccount) {
+    return NextResponse.json({ error: "Not authenticated" }, { status: 401 })
   }
 
-  const res = await fetch("https://api.spotify.com/v1/me", {
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-    },
-  });
-
-  const data = await res.json();
-  return NextResponse.json(data);
+  // ✅ Return only the info you want to expose
+  return NextResponse.json({
+    id: user.spotifyId,
+    displayName: user.displayName,
+    email: user.email,
+    imageUrl: user.imageUrl,
+  })
 }
