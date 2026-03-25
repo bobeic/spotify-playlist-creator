@@ -1,0 +1,18 @@
+name: Spotify Recently Played Cron
+
+on:
+  schedule:
+    - cron: '*/30 * * * *'
+  workflow_dispatch: # allows you to trigger it manually from GitHub for testing
+
+jobs:
+  fetch-recently-played:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fetch Recently Played
+        run: |
+          curl -X GET "${{ secrets.APP_URL }}/api/cron/spotify" \
+            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+            --fail \
+            --silent \
+            --show-error
