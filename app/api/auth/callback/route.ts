@@ -65,7 +65,10 @@ export async function GET(req: NextRequest) {
   const session = await createSession(user.id);
 
   // 5️⃣ Set session cookie (use this instead of storing token directly)
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://127.0.0.1:3000";
+  const baseUrl =
+    process.env.NEXT_PUBLIC_BASE_URL ??
+    (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : undefined) ??
+    "http://127.0.0.1:3000";
   const response = NextResponse.redirect(baseUrl);
 
   response.cookies.set("sessionId", session.id, {

@@ -1,10 +1,10 @@
-import { enqueueAllUsers } from "@/lib/workers/enqueueAllUsers";
+import { syncRecentlyPlayedForConnectedUsers } from "@/lib/spotify/syncRecentlyPlayed";
 
 async function main() {
   try {
     console.log("Starting local recently played fetch...");
-    await enqueueAllUsers();
-    console.log("Done fetching recently played.");
+    const summary = await syncRecentlyPlayedForConnectedUsers();
+    console.log("Done fetching recently played.", summary);
   } catch (err) {
     console.error("Error fetching recently played:", err);
   }
