@@ -1,39 +1,39 @@
-import { cookies } from "next/headers";
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server"
+import { getCurrentUser } from "@/lib/auth/getCurrentUser"
 
 export async function GET(req: NextRequest) {
-  const query = req.nextUrl.searchParams.get("q");
+  const query = req.nextUrl.searchParams.get("q")
   if (!query) {
-    return NextResponse.json({ error: "Missing query" }, { status: 400 });
+    return NextResponse.json({ error: "Missing query" }, { status: 400 })
   }
 
-  const cookieStore = await cookies();
-  const accessToken = cookieStore.get("spotify_access_token")?.value;
-  if (!accessToken) {
-    return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
+  // ✅ Get current logged-in user
+  const user = await getCurrentUser()
+  if (!user || !user.spotifyAccount) {
+    return NextResponse.json({ error: "Not authenticated" }, { status: 401 })
   }
 
+  const accessToken = user.spotifyAccount.accessToken
+
+  // ✅ Make Spotify search request
   const res = await fetch(
-    `https://api.spotify.com/v1/search?q=${encodeURIComponent(
-      query
-    )}&type=artist&limit=5`,
+    `https://api.spotify.com/v1/search?q=${encodeURIComponent(query)}&type=artist&limit=5`,
     {
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
     }
-  );
+  )
 
-  const data = await res.json();
+  const data = await res.json()
 
   if (!res.ok) {
-    console.error("Spotify search error:", data);
+    console.error("Spotify search error:", data)
     return NextResponse.json(
       { error: data.error?.message ?? "Spotify API error" },
       { status: res.status }
-    );
+    )
   }
 
-  return NextResponse.json(data.artists.items);
-
+  return NextResponse.json(data.artists.items)
 }

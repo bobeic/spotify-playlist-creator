@@ -1,3 +1,129 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+  --color-bg: #0D0D12;
+  --color-surface: #13131A;
+  --color-surface-elevated: #1E1E2E;
+  --color-accent: #A78BFA;
+  --color-accent-rgb: 167, 139, 250;
+  --color-secondary: #34D399;
+  --color-secondary-rgb: 52, 211, 153;
+  --color-muted: #6B7280;
+  --color-text: #F3F4F6;
+  --color-border: #ffffff0f;
+}
+
+html {
+  background: var(--color-bg);
+}
+
+body {
+  font-family: "Aptos", "Segoe UI Variable Display", "Segoe UI", sans-serif;
+  background:
+    radial-gradient(circle at top, rgba(var(--color-accent-rgb), 0.08), transparent 28%),
+    radial-gradient(circle at bottom right, rgba(var(--color-secondary-rgb), 0.05), transparent 24%),
+    var(--color-bg);
+  color: var(--color-text);
+}
+
+* {
+  border-color: var(--color-border);
+}
+
+::selection {
+  background: rgba(var(--color-accent-rgb), 0.3);
+  color: var(--color-text);
+}
+
+.app-shell {
+  position: relative;
+  min-height: 100vh;
+  overflow: hidden;
+}
+
+.aurora {
+  position: fixed;
+  inset: auto;
+  pointer-events: none;
+  z-index: 0;
+  height: 34rem;
+  width: 34rem;
+  border-radius: 9999px;
+  filter: blur(80px);
+  opacity: 0.22;
+  will-change: transform, opacity;
+}
+
+.aurora-violet {
+  top: 8%;
+  left: -10%;
+  background: radial-gradient(circle, rgba(var(--color-accent-rgb), 0.2) 0%, rgba(var(--color-accent-rgb), 0.04) 45%, transparent 72%);
+  animation: drift-violet 18s ease-in-out infinite alternate;
+}
+
+.aurora-emerald {
+  right: -8%;
+  bottom: 2%;
+  background: radial-gradient(circle, rgba(var(--color-secondary-rgb), 0.16) 0%, rgba(var(--color-secondary-rgb), 0.03) 48%, transparent 72%);
+  animation: drift-emerald 24s ease-in-out infinite alternate;
+}
+
+.glass-panel {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 8px 32px rgba(var(--color-accent-rgb), 0.1);
+}
+
+.glass-panel-emerald {
+  box-shadow: 0 8px 32px rgba(var(--color-secondary-rgb), 0.1);
+}
+
+.hover-lift {
+  transition:
+    transform 200ms ease,
+    box-shadow 200ms ease,
+    border-color 200ms ease,
+    background-color 200ms ease,
+    color 200ms ease;
+  will-change: transform;
+}
+
+.hover-lift:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 12px 36px rgba(var(--color-accent-rgb), 0.16),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+.accent-grid {
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+@keyframes drift-violet {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1);
+    opacity: 0.18;
+  }
+  100% {
+    transform: translate3d(10%, 8%, 0) scale(1.14);
+    opacity: 0.26;
+  }
+}
+
+@keyframes drift-emerald {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1);
+    opacity: 0.14;
+  }
+  100% {
+    transform: translate3d(-12%, -10%, 0) scale(1.18);
+    opacity: 0.22;
+  }
+}
