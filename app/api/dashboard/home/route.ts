@@ -1,13 +1,9 @@
 import { NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/auth/getCurrentUser";
 import {
-  getArtistLoyalty,
-  getDiscoveryRate,
-  getHeatmapData,
   getLatestPlayHistoryUpdate,
   getListeningMomentum,
   getMiniWrapped,
-  getNewTracksThisWeek,
   getRecentlyPlayed,
   getTopArtistsThisWeek,
   getTopTracksThisWeek,
@@ -28,10 +24,6 @@ export async function GET() {
     latestPlayHistoryUpdate,
     listeningMomentum,
     miniWrapped,
-    heatmapData,
-    discoveryRate,
-    artistLoyalty,
-    newTracks,
   ] = await Promise.all([
     getTopTracksThisWeek(user.id),
     getTopArtistsThisWeek(user.id),
@@ -39,10 +31,6 @@ export async function GET() {
     getLatestPlayHistoryUpdate(user.id),
     getListeningMomentum(user.id),
     getMiniWrapped(user.id),
-    getHeatmapData(user.id),
-    getDiscoveryRate(user.id),
-    getArtistLoyalty(user.id),
-    getNewTracksThisWeek(user.id),
   ]);
 
   return NextResponse.json({
@@ -52,10 +40,6 @@ export async function GET() {
     latestPlayHistoryUpdate,
     listeningMomentum,
     miniWrapped,
-    heatmapData,
-    discoveryRate,
-    artistLoyalty,
-    newTracks,
     serverRefreshedAt: new Date().toISOString(),
   });
 }

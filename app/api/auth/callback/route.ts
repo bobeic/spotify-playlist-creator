@@ -9,7 +9,7 @@ export async function GET(req: NextRequest) {
   const redirectUri = getSpotifyRedirectUri(req);
 
   if (spotifyError) {
-    return NextResponse.redirect(new URL(`/?auth_error=${spotifyError}`, req.nextUrl.origin));
+    return NextResponse.redirect(new URL(`/login?auth_error=${spotifyError}`, req.nextUrl.origin));
   }
 
   if (!code) {
@@ -72,7 +72,7 @@ export async function GET(req: NextRequest) {
   const session = await createSession(user.id);
 
   // 5️⃣ Set session cookie (use this instead of storing token directly)
-  const response = NextResponse.redirect(new URL("/", req.nextUrl.origin));
+  const response = NextResponse.redirect(new URL("/dashboard", req.nextUrl.origin));
 
   response.cookies.set("sessionId", session.id, {
     httpOnly: true,

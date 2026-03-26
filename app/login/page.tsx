@@ -5,7 +5,7 @@ import { CursorGlow } from "@/app/components/CursorGlow";
 
 export default function LoginPage() {
   return (
-    <main className="relative z-20 flex min-h-[calc(100vh-73px)] items-center justify-center px-4 py-10 sm:px-6 lg:px-8">
+    <main className="relative z-20 flex min-h-screen items-center justify-center px-4 py-10 sm:px-6 lg:px-8">
       <CursorGlow />
       <div className="glass-panel accent-grid w-full max-w-3xl overflow-hidden rounded-[32px] p-8 text-center sm:p-12">
         <p className="mb-4 text-sm uppercase tracking-[0.4em] text-[var(--color-accent)]">
