@@ -4,13 +4,7 @@ import {
   getArtistLoyalty,
   getDiscoveryRate,
   getHeatmapData,
-  getLatestPlayHistoryUpdate,
-  getListeningMomentum,
-  getMiniWrapped,
   getNewTracksThisWeek,
-  getRecentlyPlayed,
-  getTopArtistsThisWeek,
-  getTopTracksThisWeek,
 } from "@/lib/dashboard/queries";
 
 export const dynamic = "force-dynamic";
@@ -21,24 +15,7 @@ export async function GET() {
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
   }
 
-  const [
-    topTracks,
-    topArtists,
-    recentPlays,
-    latestPlayHistoryUpdate,
-    listeningMomentum,
-    miniWrapped,
-    heatmapData,
-    discoveryRate,
-    artistLoyalty,
-    newTracks,
-  ] = await Promise.all([
-    getTopTracksThisWeek(user.id),
-    getTopArtistsThisWeek(user.id),
-    getRecentlyPlayed(user.id),
-    getLatestPlayHistoryUpdate(user.id),
-    getListeningMomentum(user.id),
-    getMiniWrapped(user.id),
+  const [heatmapData, discoveryRate, artistLoyalty, newTracks] = await Promise.all([
     getHeatmapData(user.id),
     getDiscoveryRate(user.id),
     getArtistLoyalty(user.id),
@@ -46,12 +23,6 @@ export async function GET() {
   ]);
 
   return NextResponse.json({
-    topTracks,
-    topArtists,
-    recentPlays,
-    latestPlayHistoryUpdate,
-    listeningMomentum,
-    miniWrapped,
     heatmapData,
     discoveryRate,
     artistLoyalty,

@@ -17,9 +17,17 @@ type SpotifyRecentlyPlayedResponse = {
   }>;
 };
 
+export type UserRecentlyPlayedSyncSummary = {
+  userId: string;
+  fetchedPlays: number;
+  insertedPlays: number;
+  skippedExistingPlays: number;
+  newTracksInserted: number;
+};
+
 export async function syncRecentlyPlayedForUser(
   spotifyAccount: SpotifyAccount
-): Promise<number> {
+): Promise<UserRecentlyPlayedSyncSummary> {
   const accessToken = await getValidSpotifyAccessToken(spotifyAccount);
   const res = await fetch(
     "https://api.spotify.com/v1/me/player/recently-played?limit=50",
@@ -37,8 +45,31 @@ export async function syncRecentlyPlayedForUser(
   }
 
   const data = (await res.json()) as SpotifyRecentlyPlayedResponse;
-  const plays = data.items ?? [];
-  let insertedCount = 0;
+  const plays = [...(data.items ?? [])].sort(
+    (left, right) =>
+      new Date(left.played_at).getTime() - new Date(right.played_at).getTime()
+  );
+  const incomingTrackIds = [...new Set(plays.map((item) => item.track.id))];
+  const knownTracks = new Set(
+    (
+      await prisma.playHistory.findMany({
+        where: {
+          userId: spotifyAccount.userId,
+          spotifyTrackId: { in: incomingTrackIds },
+        },
+        select: { spotifyTrackId: true },
+        distinct: ["spotifyTrackId"],
+      })
+    ).map((play) => play.spotifyTrackId)
+  );
+
+  const summary: UserRecentlyPlayedSyncSummary = {
+    userId: spotifyAccount.userId,
+    fetchedPlays: plays.length,
+    insertedPlays: 0,
+    skippedExistingPlays: 0,
+    newTracksInserted: 0,
+  };
 
   for (const item of plays) {
     const playedAt = new Date(item.played_at);
@@ -53,8 +84,11 @@ export async function syncRecentlyPlayedForUser(
     });
 
     if (existingPlay) {
+      summary.skippedExistingPlays += 1;
       continue;
     }
+
+    const isNewTrack = !knownTracks.has(item.track.id);
 
     await prisma.playHistory.create({
       data: {
@@ -65,13 +99,20 @@ export async function syncRecentlyPlayedForUser(
         albumName: item.track.album.name,
         albumImage: item.track.album.images?.[0]?.url ?? null,
         playedAt,
+        isNewTrack,
       },
     });
 
-    insertedCount += 1;
+    knownTracks.add(item.track.id);
+    summary.insertedPlays += 1;
+    if (isNewTrack) {
+      summary.newTracksInserted += 1;
+    }
   }
 
-  return insertedCount;
+  console.log("[spotify-sync] User sync complete", summary);
+
+  return summary;
 }
 
 export async function syncRecentlyPlayedForConnectedUsers() {
@@ -81,13 +122,21 @@ export async function syncRecentlyPlayedForConnectedUsers() {
     processedUsers: 0,
     failedUsers: 0,
     insertedTracks: 0,
+    newTracksInserted: 0,
+    skippedExistingTracks: 0,
   };
+
+  console.log("[spotify-sync] Starting sync for connected users", {
+    totalUsers: summary.totalUsers,
+  });
 
   for (const spotifyAccount of spotifyAccounts) {
     try {
-      const insertedCount = await syncRecentlyPlayedForUser(spotifyAccount);
+      const userSummary = await syncRecentlyPlayedForUser(spotifyAccount);
       summary.processedUsers += 1;
-      summary.insertedTracks += insertedCount;
+      summary.insertedTracks += userSummary.insertedPlays;
+      summary.newTracksInserted += userSummary.newTracksInserted;
+      summary.skippedExistingTracks += userSummary.skippedExistingPlays;
     } catch (error) {
       summary.failedUsers += 1;
       console.error(
@@ -96,6 +145,8 @@ export async function syncRecentlyPlayedForConnectedUsers() {
       );
     }
   }
+
+  console.log("[spotify-sync] Connected user sync complete", summary);
 
   return summary;
 }
